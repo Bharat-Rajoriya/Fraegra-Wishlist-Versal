@@ -53,6 +53,18 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "Wishlist server running on Vercel" });
 });
 
+app.get("/test-shopify", async (req, res) => {
+  const data = await shopifyGraphQL(`
+    {
+      shop {
+        name
+      }
+    }
+  `);
+
+  res.json(data);
+});
+
 /* -----------------------------
    Toggle Wishlist
 ------------------------------ */
