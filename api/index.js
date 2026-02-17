@@ -6,7 +6,6 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -15,8 +14,6 @@ app.use(cors({
     "https://fraegra.myshopify.com",
     "https://fraegra.com"
   ],
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
 }));
 
 const SHOP = process.env.SHOPIFY_SHOP;
@@ -28,7 +25,7 @@ const API_VERSION = process.env.API_VERSION;
 ------------------------------ */
 async function shopifyGraphQL(query, variables = {}) {
   const response = await fetch(
-    `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`,
+    https://${SHOP}/admin/api/${API_VERSION}/graphql.json,
     {
       method: "POST",
       headers: {
@@ -42,99 +39,24 @@ async function shopifyGraphQL(query, variables = {}) {
   const json = await response.json();
 
   if (json.errors) {
-    console.error("Shopify GraphQL errors:", json.errors);
-    throw new Error("Shopify GraphQL request failed");
+    console.error(json.errors);
+    throw new Error("Shopify request failed");
   }
 
   return json.data;
 }
 
 /* -----------------------------
-   Health Check
+   Health
 ------------------------------ */
-app.get("/health", (req, res) => {
-  res.json({ status: "Wishlist server running" });
-});
-
-app.get("/test-shopify", async (req, res) => {
-  try {
-    const data = await shopifyGraphQL(`
-      {
-        shop {
-          name
-        }
-      }
-    `);
-
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Shopify connection failed" });
-  }
-});
-
-app.get("/test-customer/:id", async (req, res) => {
-  try {
-    const customerId = req.params.id;
-
-    const data = await shopifyGraphQL(
-      `
-      query getCustomer($id: ID!) {
-        customer(id: $id) {
-          id
-          email
-          metafield(namespace: "custom", key: "wishlist_products") {
-            value
-          }
-        }
-      }
-      `,
-      { id: customerId }
-    );
-
-    res.json(data);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Customer fetch failed" });
-  }
-});
-
-/* -----------------------------
-   Get Wishlist
------------------------------- */
-app.get("/wishlist/:customerId", async (req, res) => {
-  const customerId = decodeURIComponent(req.params.customerId);
-
-  try {
-    const data = await shopifyGraphQL(
-      `
-      query getWishlist($id: ID!) {
-        customer(id: $id) {
-          metafield(namespace: "custom", key: "wishlist_products") {
-            value
-          }
-        }
-      }
-      `,
-      { id: customerId }
-    );
-
-    const raw = data.customer?.metafield?.value;
-    const wishlist = raw ? JSON.parse(raw) : [];
-
-    res.json({ wishlist });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch wishlist" });
-  }
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Wishlist server running on Vercel" });
 });
 
 /* -----------------------------
    Toggle Wishlist
 ------------------------------ */
-app.post("/wishlist/toggle/:customerId", async (req, res) => {
+app.post("/api/wishlist/toggle/:customerId", async (req, res) => {
   const customerId = decodeURIComponent(req.params.customerId);
   const { productId } = req.body;
 
@@ -209,4 +131,5 @@ app.post("/wishlist/toggle/:customerId", async (req, res) => {
   }
 });
 
+/* IMPORTANT: Export for Vercel */
 export default app;
