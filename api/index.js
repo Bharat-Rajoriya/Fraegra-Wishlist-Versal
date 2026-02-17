@@ -25,7 +25,7 @@ const API_VERSION = process.env.API_VERSION;
 ------------------------------ */
 async function shopifyGraphQL(query, variables = {}) {
   const response = await fetch(
-    https://${SHOP}/admin/api/${API_VERSION}/graphql.json,
+    `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`,
     {
       method: "POST",
       headers: {
