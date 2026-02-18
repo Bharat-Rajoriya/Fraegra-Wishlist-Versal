@@ -45,11 +45,11 @@ async function shopifyGraphQL(query, variables = {}) {
 /* -----------------------------
    Health
 ------------------------------ */
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.json({ status: "Wishlist server running on Vercel" });
 });
 
-app.get("/test-shopify", async (req, res) => {
+app.get("/api/test-shopify", async (req, res) => {
   const data = await shopifyGraphQL(`
     {
       shop {
@@ -64,7 +64,7 @@ app.get("/test-shopify", async (req, res) => {
 /* -----------------------------
    Toggle Wishlist
 ------------------------------ */
-app.post("/wishlist/toggle/:customerId", async (req, res) => {
+app.post("/api/wishlist/toggle/:customerId", async (req, res) => {
   const customerId = decodeURIComponent(req.params.customerId);
   const { productId } = req.body;
 
