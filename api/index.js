@@ -139,9 +139,4 @@ app.post("/wishlist/toggle/:customerId", async (req, res) => {
   }
 });
 
-/* IMPORTANT: Export for Vercel */
-<<<<<<< HEAD
 export default app;
-=======
-export default app;
->>>>>>> 1074791cfbd1672b45b58135409e73324d396cf2
